@@ -3,237 +3,130 @@ title: API Reference
 
 language_tabs: # must be one of https://git.io/vQNgJ
   - shell
-  - ruby
-  - python
-  - javascript
 
 toc_footers:
-  - <a href='#'>Sign Up for a Developer Key</a>
   - <a href='https://github.com/lord/slate'>Documentation Powered by Slate</a>
 
 includes:
   - errors
 
-search: true
+search: false
 ---
 
 # Introduction
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
+This is a basic RESTFUL API for office staff members to save their timesheets.
 
-We have language bindings in Shell, Ruby, Python, and JavaScript! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+# Timesheets
 
-This example API documentation page was created with [Slate](https://github.com/lord/slate). Feel free to edit it and use it as a base for your own API's documentation.
-
-# Authentication
-
-> To authorize, use this code:
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-```
-
+## Get timesheets for a user
 ```shell
-# With shell, you can just pass the correct header with each request
-curl "api_endpoint_here"
-  -H "Authorization: meowmeowmeow"
+curl "http://example.com/timesheets?uid=1&date=2018-01-01"
 ```
 
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-```
-
-> Make sure to replace `meowmeowmeow` with your API key.
-
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
-
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
-
-`Authorization: meowmeowmeow`
-
-<aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
-</aside>
-
-# Kittens
-
-## Get All Kittens
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
-```
-
-```shell
-curl "http://example.com/api/kittens"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let kittens = api.kittens.get();
-```
-
-> The above command returns JSON structured like this:
+> The above command returns an array of standard JSONAPI objects like this:
 
 ```json
-[
-  {
+[{
+  "data": {
     "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
+    "type": "timesheet",
+    "attributes": {
+      "added_at": "2018-01-01",
+      "amount_complete": 0,
+      "item": "/2",
+      "job": "332211",
+      "minutes": 10,
+      "notes": "another random note",
+      "task": "Drafting",
+      "user_uid": "1"
+    }
   }
-]
+}, {
+  "data": {
+    "id": 2,
+    "type": "timesheet",
+    "attributes": {
+      "added_at": "2018-01-01",
+      "amount_complete": 0,
+      "item": "/1",
+      "job": "112233",
+      "minutes": 10,
+      "notes": "random note",
+      "task": "Drafting",
+      "user_uid": "1"
+    }
+  }
+}]
 ```
 
-This endpoint retrieves all kittens.
+This endpoint retrieves all timesheets on a date by a user.
 
 ### HTTP Request
 
-`GET http://example.com/api/kittens`
+`GET http://example.com/timesheets`
 
 ### Query Parameters
 
-Parameter | Default | Description
---------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
+Parameter | Description
+--------- | -----------
+uid | The user id you want to retrieve timesheets for
+date | The date the timesheets were added in iso8601 format
 
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
+<aside class="info">
+No authentication has been setup as yet.
 </aside>
 
-## Get a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get(2)
-```
+## Create / update a timesheet
 
 ```shell
-curl "http://example.com/api/kittens/2"
-  -H "Authorization: meowmeowmeow"
+curl "http://example.com/timesheets"
 ```
 
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.get(2);
-```
-
-> The above command returns JSON structured like this:
+> The above command returns a JSONAPI object like this:
 
 ```json
 {
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
+  "data": {
+    "id": 2,
+    "type": "timesheet",
+    "attributes": {
+      "added_at": "2018-01-01",
+      "amount_complete": 0,
+      "item": "/1",
+      "job": "112233",
+      "minutes": 10,
+      "notes": "random note",
+      "task": "Drafting",
+      "user_uid": "1"
+    }
+  }
 }
 ```
 
-This endpoint retrieves a specific kitten.
-
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
+This endpoint will create a timesheet, or update an existing one. If it finds a timesheet that matches the same date, job, item, task and user then it will update it, otherwise it will create a new timesheet.
 
 ### HTTP Request
 
-`GET http://example.com/kittens/<ID>`
+`POST http://example.com/timesheets`
 
 ### URL Parameters
+        added_at: '02/07/2018',
+        amount_complete: 0,
+        item: '/2',
+        job: '332211',
+        entered_time: '10',
+        notes: 'another random note',
+        task: 'Drafting',
+        user_uid: '2',
 
 Parameter | Description
 --------- | -----------
-ID | The ID of the kitten to retrieve
-
-## Delete a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -X DELETE
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.delete(2);
-```
-
-> The above command returns JSON structured like this:
-
-```json
-{
-  "id": 2,
-  "deleted" : ":("
-}
-```
-
-This endpoint deletes a specific kitten.
-
-### HTTP Request
-
-`DELETE http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to delete
-
+added_at | The date the timesheet is for in iso8601 format
+amount_complete | Percentage as an integer between 0 and 100
+item | Item identifier
+job | The job identifier
+entered_time | The time worked. Can be any one of `52`, `52m`, `1:52`, `1h 52m`
+notes | Notes explaining the work done for this task
+task | A string representing the task performed
+user_uid | The id for the staff member
